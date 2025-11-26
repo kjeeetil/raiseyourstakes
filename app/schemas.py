@@ -15,14 +15,12 @@ class PositionSummary(BaseModel):
     description: str
     created_at: datetime
     vote_count: int
-    total_stake: float
 
     class Config:
         from_attributes = True
 
 
 class VoteCreate(BaseModel):
-    stake: float = Field(..., gt=0, description="Stake or weight for the vote")
     voter_name: Optional[str] = Field(
         None, max_length=255, description="Optional name to identify the voter"
     )
