@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Raise Your Stakes</title>
+    <style>
+      :root {
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: #0f172a;
+        background: #f8fafc;
+      }
+      body {
+        margin: 0 auto;
+        padding: 1.5rem;
+        max-width: 960px;
+      }
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+      h1 {
+        margin: 0;
+      }
+      form,
+      .card {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+        margin-bottom: 1rem;
+      }
+      label {
+        display: block;
+        margin: 0.5rem 0 0.25rem;
+        font-weight: 600;
+      }
+      input,
+      textarea {
+        width: 100%;
+        padding: 0.5rem;
+        border-radius: 0.35rem;
+        border: 1px solid #cbd5e1;
+        font-size: 1rem;
+      }
+      textarea {
+        min-height: 120px;
+        resize: vertical;
+      }
+      button {
+        background: #2563eb;
+        color: white;
+        border: none;
+        border-radius: 0.35rem;
+        padding: 0.5rem 0.9rem;
+        font-size: 1rem;
+        cursor: pointer;
+      }
+      button.secondary {
+        background: #0f172a;
+      }
+      .position-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .stats {
+        display: inline-flex;
+        gap: 0.75rem;
+        color: #0f172a;
+        font-weight: 700;
+      }
+      .stack {
+        display: grid;
+        gap: 0.25rem;
+        margin: 0.25rem 0;
+      }
+      .muted {
+        color: #475569;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Raise Your Stakes</h1>
+      <div class="muted">Submit a position or back one with a vote.</div>
+    </header>
+
+    <section>
+      <form id="position-form">
+        <h2>Create a new position</h2>
+        <label for="title">Title</label>
+        <input id="title" name="title" maxlength="255" required />
+
+        <label for="description">Description</label>
+        <textarea
+          id="description"
+          name="description"
+          maxlength="2000"
+          required
+          placeholder="Describe the claim, question, or stance"
+        ></textarea>
+
+        <button type="submit">Submit position</button>
+      </form>
+    </section>
+
+    <section>
+      <h2>Positions by total stake</h2>
+      <div id="positions"></div>
+    </section>
+
+    <script>
+      const positionsContainer = document.getElementById("positions");
+      const form = document.getElementById("position-form");
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const data = Object.fromEntries(new FormData(form).entries());
+
+        const response = await fetch("/positions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+
+        if (response.ok) {
+          form.reset();
+          await loadPositions();
+        } else {
+          alert("Could not save the position. Please try again.");
+        }
+      });
+
+      async function loadPositions() {
+        positionsContainer.innerHTML = "Loading...";
+        const response = await fetch("/positions");
+        const positions = await response.json();
+
+        if (!positions.length) {
+          positionsContainer.innerHTML = "No positions yet. Be the first to post!";
+          return;
+        }
+
+        positionsContainer.innerHTML = "";
+        positions.forEach((position) => {
+          const card = document.createElement("div");
+          card.className = "card";
+          card.innerHTML = `
+            <div class="position-header">
+              <div>
+                <div class="stack">
+                  <strong>${position.title}</strong>
+                  <div class="muted">${position.description}</div>
+                </div>
+              </div>
+              <div class="stats">
+                <span>Votes: ${position.vote_count}</span>
+                <span>Stake: ${position.total_stake.toFixed(2)}</span>
+              </div>
+            </div>
+            <form class="vote-form" data-id="${position.id}">
+              <label>Stake</label>
+              <input name="stake" type="number" min="0.01" step="0.01" required />
+              <label>Your name (optional)</label>
+              <input name="voter_name" maxlength="255" placeholder="Anon" />
+              <button type="submit" class="secondary">Back this position</button>
+            </form>
+          `;
+          positionsContainer.appendChild(card);
+        });
+
+        document.querySelectorAll(".vote-form").forEach((voteForm) => {
+          voteForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const positionId = voteForm.dataset.id;
+            const formData = new FormData(voteForm);
+            const payload = Object.fromEntries(formData.entries());
+            payload.stake = Number(payload.stake);
+            if (!payload.stake || payload.stake <= 0) {
+              alert("Stake must be greater than zero.");
+              return;
+            }
+
+            const response = await fetch(`/positions/${positionId}/votes`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(payload),
+            });
+
+            if (response.ok) {
+              await loadPositions();
+            } else {
+              alert("Could not submit vote. Please try again.");
+            }
+          });
+        });
+      }
+
+      loadPositions();
+    </script>
+  </body>
+</html>
