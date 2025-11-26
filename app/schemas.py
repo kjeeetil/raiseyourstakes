@@ -23,7 +23,6 @@ class PositionSummary(BaseModel):
 
 
 class VoteCreate(BaseModel):
-    stake: float = Field(..., gt=0, description="Stake or weight for the vote")
     voter_name: Optional[str] = Field(
         None, max_length=255, description="Optional name to identify the voter"
     )

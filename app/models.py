@@ -21,7 +21,7 @@ class Vote(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     position_id = Column(Integer, ForeignKey("positions.id"), nullable=False, index=True)
-    stake = Column(Float, nullable=False)
+    stake = Column(Float, nullable=False, default=1.0)
     voter_name = Column(String(255), nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 

@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 from . import models, schemas
 from .database import get_db, init_db
 
-app = FastAPI(title="Raise Your Stakes", version="0.1.0")
+app = FastAPI(title="Raise Your Votes", version="0.1.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -59,7 +59,7 @@ def list_positions(db: Session = Depends(get_db)) -> List[schemas.PositionSummar
             vote_counts.c.backer_names,
         )
         .outerjoin(vote_counts, models.Position.id == vote_counts.c.position_id)
-        .order_by(func.coalesce(vote_counts.c.total_stake, 0).desc())
+        .order_by(func.coalesce(vote_counts.c.vote_count, 0).desc())
     )
 
     results = db.execute(query).all()
@@ -109,9 +109,7 @@ def cast_vote(
     if position is None:
         raise HTTPException(status_code=404, detail="Position not found")
 
-    db_vote = models.Vote(
-        position_id=position.id, stake=vote.stake, voter_name=vote.voter_name
-    )
+    db_vote = models.Vote(position_id=position.id, voter_name=vote.voter_name)
     db.add(db_vote)
     db.commit()
 

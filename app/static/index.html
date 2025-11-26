@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Raise Your Stakes</title>
+    <title>Raise Your Votes</title>
     <style>
       :root {
         font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -89,7 +89,7 @@
   <body>
     <header>
       <h1>What will be the outcome of tomorrow?</h1>
-      <div class="muted">Submit a new position or back one with a vote. Keep in mind that this is a public web page!</div>
+      <div class="muted">Submit a new position or add your vote. Keep in mind that this is a public web page!</div>
     </header>
 
     <section>
@@ -167,15 +167,12 @@
               </div>
               <div class="stats">
                 <span>Votes: ${position.vote_count}</span>
-                <span>Stake: ${position.total_stake.toFixed(2)}</span>
               </div>
             </div>
             <form class="vote-form" data-id="${position.id}">
-              <label>Stake</label>
-              <input name="stake" type="number" min="0.01" step="0.01" required />
               <label>Your name (optional)</label>
               <input name="voter_name" maxlength="255" placeholder="Anon" />
-              <button type="submit" class="secondary">Back this position</button>
+              <button type="submit" class="secondary">Add your vote</button>
             </form>
           `;
           positionsContainer.appendChild(card);
@@ -187,11 +184,6 @@
             const positionId = voteForm.dataset.id;
             const formData = new FormData(voteForm);
             const payload = Object.fromEntries(formData.entries());
-            payload.stake = Number(payload.stake);
-            if (!payload.stake || payload.stake <= 0) {
-              alert("Stake must be greater than zero.");
-              return;
-            }
 
             const response = await fetch(`/positions/${positionId}/votes`, {
               method: "POST",
