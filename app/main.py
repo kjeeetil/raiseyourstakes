@@ -39,6 +39,10 @@ def list_positions(db: Session = Depends(get_db)) -> List[schemas.PositionSummar
         select(
             models.Vote.position_id,
             func.count(models.Vote.id).label("vote_count"),
+            func.coalesce(func.sum(models.Vote.stake), 0).label("total_stake"),
+            func.group_concat(
+                func.coalesce(models.Vote.voter_name, "Anon"), "|"
+            ).label("backer_names"),
         )
         .group_by(models.Vote.position_id)
         .subquery()
@@ -51,6 +55,8 @@ def list_positions(db: Session = Depends(get_db)) -> List[schemas.PositionSummar
             models.Position.description,
             models.Position.created_at,
             func.coalesce(vote_counts.c.vote_count, 0).label("vote_count"),
+            func.coalesce(vote_counts.c.total_stake, 0).label("total_stake"),
+            vote_counts.c.backer_names,
         )
         .outerjoin(vote_counts, models.Position.id == vote_counts.c.position_id)
         .order_by(func.coalesce(vote_counts.c.vote_count, 0).desc())
@@ -64,6 +70,8 @@ def list_positions(db: Session = Depends(get_db)) -> List[schemas.PositionSummar
             description=row.description,
             created_at=row.created_at,
             vote_count=row.vote_count or 0,
+            total_stake=float(row.total_stake or 0),
+            backers=(row.backer_names.split("|") if row.backer_names else []),
         )
         for row in results
     ]
@@ -87,6 +95,8 @@ def create_position(
         description=db_position.description,
         created_at=db_position.created_at,
         vote_count=0,
+        total_stake=0.0,
+        backers=[],
     )
     return summary
 
@@ -118,6 +128,10 @@ def _position_summary(position_id: int, db: Session) -> schemas.PositionSummary:
     vote_counts = (
         select(
             func.count(models.Vote.id).label("vote_count"),
+            func.coalesce(func.sum(models.Vote.stake), 0).label("total_stake"),
+            func.group_concat(
+                func.coalesce(models.Vote.voter_name, "Anon"), "|"
+            ).label("backer_names"),
         )
         .where(models.Vote.position_id == position_id)
     )
@@ -129,4 +143,6 @@ def _position_summary(position_id: int, db: Session) -> schemas.PositionSummary:
         description=position.description,
         created_at=position.created_at,
         vote_count=vote_stats.vote_count or 0,
+        total_stake=float(vote_stats.total_stake or 0),
+        backers=(vote_stats.backer_names.split("|") if vote_stats.backer_names else []),
     )

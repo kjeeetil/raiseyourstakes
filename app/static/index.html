@@ -81,6 +81,9 @@
       .muted {
         color: #475569;
       }
+      .backers {
+        font-size: 0.95rem;
+      }
     </style>
   </head>
   <body>
@@ -155,6 +158,11 @@
                 <div class="stack">
                   <strong>${position.title}</strong>
                   <div class="muted">${position.description}</div>
+                  <div class="muted backers"><strong>Backers:</strong> ${
+                    position.backers?.length
+                      ? position.backers.join(", ")
+                      : "No backers yet"
+                  }</div>
                 </div>
               </div>
               <div class="stats">
