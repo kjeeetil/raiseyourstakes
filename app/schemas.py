@@ -16,6 +16,7 @@ class PositionSummary(BaseModel):
     created_at: datetime
     vote_count: int
     total_stake: float
+    backers: List[str] = Field(default_factory=list)
 
     class Config:
         from_attributes = True
