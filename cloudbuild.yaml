@@ -23,6 +23,6 @@ steps:
 images:
   - 'gcr.io/$PROJECT_ID/raiseyourstakes'
 substitutions:
-  _REGION: us-central1
+  _REGION: europe-west1
 options:
   logging: CLOUD_LOGGING_ONLY
