@@ -4,121 +4,78 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Raise Your Votes</title>
-    <style>
-      :root {
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        color: #0f172a;
-        background: #f8fafc;
-      }
-      body {
-        margin: 0 auto;
-        padding: 1.5rem;
-        max-width: 960px;
-      }
-      header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1rem;
-      }
-      h1 {
-        margin: 0;
-      }
-      form,
-      .card {
-        background: white;
-        border: 1px solid #e2e8f0;
-        border-radius: 0.5rem;
-        padding: 1rem;
-        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
-        margin-bottom: 1rem;
-      }
-      label {
-        display: block;
-        margin: 0.5rem 0 0.25rem;
-        font-weight: 600;
-      }
-      input,
-      textarea {
-        width: 100%;
-        padding: 0.5rem;
-        border-radius: 0.35rem;
-        border: 1px solid #cbd5e1;
-        font-size: 1rem;
-      }
-      textarea {
-        min-height: 120px;
-        resize: vertical;
-      }
-      button {
-        background: #2563eb;
-        color: white;
-        border: none;
-        border-radius: 0.35rem;
-        padding: 0.5rem 0.9rem;
-        font-size: 1rem;
-        cursor: pointer;
-      }
-      button.secondary {
-        background: #0f172a;
-      }
-      .position-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      .stats {
-        display: inline-flex;
-        gap: 0.75rem;
-        color: #0f172a;
-        font-weight: 700;
-      }
-      .stack {
-        display: grid;
-        gap: 0.25rem;
-        margin: 0.25rem 0;
-      }
-      .muted {
-        color: #475569;
-      }
-      .backers {
-        font-size: 0.95rem;
-      }
-    </style>
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body>
-    <header>
-      <h1>What will be the outcome of tomorrow?</h1>
-      <div class="muted">Submit a new position or add your vote. Keep in mind that this is a public web page!</div>
-    </header>
+  <body class="bg-slate-950 text-slate-50 min-h-screen overflow-hidden">
+    <div
+      class="pointer-events-none select-none fixed inset-0 flex items-center justify-center text-slate-800 text-opacity-60 font-black leading-none [font-size:18vw] lg:[font-size:14vw] uppercase tracking-tight"
+      id="countdown-bg"
+    >
+      --:--:--
+    </div>
 
-    <section>
-      <form id="position-form">
-        <h2>Create a new position</h2>
-        <label for="title">Your Alias</label>
-        <input id="title" name="title" maxlength="255" required />
+    <div class="relative">
+      <div class="mx-auto max-w-4xl px-4 py-12 space-y-8">
+        <header class="space-y-2 text-center lg:text-left">
+          <p class="text-sm font-semibold uppercase tracking-[0.2em] text-indigo-300">Raise Your Stakes</p>
+          <h1 class="text-3xl sm:text-4xl font-bold text-white">What will be the outcome of tomorrow?</h1>
+          <p class="text-slate-300">
+            Submit a new position or add your vote. Keep in mind that this is a public web page!
+          </p>
+          <p class="text-indigo-200 text-sm">Countdown to tomorrow at noon in Oslo.</p>
+        </header>
 
-        <label for="description">Your Position</label>
-        <textarea
-          id="description"
-          name="description"
-          maxlength="2000"
-          required
-          placeholder="Describe the claim, question, or stance"
-        ></textarea>
+        <section class="grid gap-6 lg:grid-cols-2">
+          <form id="position-form" class="rounded-2xl bg-slate-900/70 border border-slate-800 p-6 shadow-xl shadow-indigo-900/10">
+            <div class="flex items-center justify-between mb-4">
+              <h2 class="text-xl font-semibold">Create a new position</h2>
+              <span class="rounded-full bg-indigo-600/20 px-3 py-1 text-xs font-semibold text-indigo-200">New</span>
+            </div>
+            <label for="title" class="block text-sm font-semibold text-slate-200">Your Alias</label>
+            <input
+              id="title"
+              name="title"
+              maxlength="255"
+              required
+              class="mt-1 w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-slate-50 placeholder:text-slate-500 focus:border-indigo-500 focus:outline-none focus:ring focus:ring-indigo-500/30"
+            />
 
-        <button type="submit">Submit position</button>
-      </form>
-    </section>
+            <label for="description" class="mt-4 block text-sm font-semibold text-slate-200">Your Position</label>
+            <textarea
+              id="description"
+              name="description"
+              maxlength="2000"
+              required
+              placeholder="Describe the claim, question, or stance"
+              class="mt-1 w-full rounded-lg border border-slate-700 bg-slate-900 px-3 py-2 text-slate-50 placeholder:text-slate-500 focus:border-indigo-500 focus:outline-none focus:ring focus:ring-indigo-500/30 min-h-[140px]"
+            ></textarea>
 
-    <section>
-      <h2>Existing positions</h2>
-      <div id="positions"></div>
-    </section>
+            <button
+              type="submit"
+              class="mt-4 inline-flex items-center justify-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-indigo-600/25 transition hover:bg-indigo-500"
+            >
+              Submit position
+            </button>
+          </form>
+
+          <section class="rounded-2xl bg-slate-900/70 border border-slate-800 p-6 shadow-xl shadow-indigo-900/10 space-y-4">
+            <div class="flex items-center justify-between">
+              <h2 class="text-xl font-semibold">Existing positions</h2>
+              <div class="flex items-center gap-2 text-xs text-indigo-200">
+                <span class="inline-block h-2 w-2 rounded-full bg-green-400"></span>
+                Live updates
+              </div>
+            </div>
+            <div id="positions" class="space-y-4 text-slate-100"></div>
+          </section>
+        </section>
+      </div>
+    </div>
 
     <script>
       const positionsContainer = document.getElementById("positions");
       const form = document.getElementById("position-form");
+      const countdownBg = document.getElementById("countdown-bg");
 
       form.addEventListener("submit", async (event) => {
         event.preventDefault();
@@ -139,41 +96,54 @@
       });
 
       async function loadPositions() {
-        positionsContainer.innerHTML = "Loading...";
+        positionsContainer.innerHTML = "<div class=\"text-slate-400\">Loading...</div>";
         const response = await fetch("/positions");
         const positions = await response.json();
 
         if (!positions.length) {
-          positionsContainer.innerHTML = "No positions yet. Be the first to post!";
+          positionsContainer.innerHTML = "<div class=\"text-slate-400\">No positions yet. Be the first to post!</div>";
           return;
         }
 
         positionsContainer.innerHTML = "";
         positions.forEach((position) => {
           const card = document.createElement("div");
-          card.className = "card";
+          card.className = "rounded-xl border border-slate-800 bg-slate-900/60 p-4 shadow-lg shadow-indigo-900/10";
           card.innerHTML = `
-            <div class="position-header">
-              <div>
-                <div class="stack">
-                  <strong>${position.title}</strong>
-                  <div class="muted">${position.description}</div>
-                  <div class="muted backers"><strong>Backers:</strong> ${
-                    position.backers?.length
-                      ? position.backers.join(", ")
-                      : "No backers yet"
-                  }</div>
+            <div class="flex flex-col gap-3">
+              <div class="flex flex-col gap-1">
+                <div class="flex items-start justify-between gap-2">
+                  <div class="space-y-1">
+                    <strong class="text-lg">${position.title}</strong>
+                    <div class="text-sm text-slate-300">${position.description}</div>
+                  </div>
+                  <div class="flex items-center gap-2 rounded-full bg-indigo-600/10 px-3 py-1 text-xs font-semibold text-indigo-200">
+                    <span class="inline-block h-2 w-2 rounded-full bg-indigo-400"></span>
+                    Votes: ${position.vote_count}
+                  </div>
                 </div>
+                <div class="text-xs text-slate-400"><strong>Backers:</strong> ${
+                  position.backers?.length
+                    ? position.backers.join(", ")
+                    : "No backers yet"
+                }</div>
               </div>
-              <div class="stats">
-                <span>Votes: ${position.vote_count}</span>
-              </div>
+              <form class="vote-form space-y-2" data-id="${position.id}">
+                <label class="text-xs font-semibold text-slate-300">Your name (optional)</label>
+                <input
+                  name="voter_name"
+                  maxlength="255"
+                  placeholder="Anon"
+                  class="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-sm text-slate-50 placeholder:text-slate-500 focus:border-indigo-500 focus:outline-none focus:ring focus:ring-indigo-500/30"
+                />
+                <button
+                  type="submit"
+                  class="inline-flex items-center justify-center gap-2 rounded-lg bg-slate-800 px-3 py-2 text-sm font-semibold text-white transition hover:bg-slate-700"
+                >
+                  <span>Add your vote</span>
+                </button>
+              </form>
             </div>
-            <form class="vote-form" data-id="${position.id}">
-              <label>Your name (optional)</label>
-              <input name="voter_name" maxlength="255" placeholder="Anon" />
-              <button type="submit" class="secondary">Add your vote</button>
-            </form>
           `;
           positionsContainer.appendChild(card);
         });
@@ -200,6 +170,76 @@
         });
       }
 
+      function getOsloParts(date) {
+        const formatter = new Intl.DateTimeFormat("en-US", {
+          timeZone: "Europe/Oslo",
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: false,
+        });
+
+        return formatter.formatToParts(date).reduce((acc, part) => {
+          if (part.type !== "literal") {
+            acc[part.type] = part.value;
+          }
+          return acc;
+        }, {});
+      }
+
+      function getNextNoonOslo() {
+        const now = new Date();
+        const nowParts = getOsloParts(now);
+        const nowOslo = new Date(
+          Date.UTC(
+            Number(nowParts.year),
+            Number(nowParts.month) - 1,
+            Number(nowParts.day),
+            Number(nowParts.hour),
+            Number(nowParts.minute),
+            Number(nowParts.second)
+          )
+        );
+
+        const target = new Date(
+          Date.UTC(Number(nowParts.year), Number(nowParts.month) - 1, Number(nowParts.day), 12, 0, 0)
+        );
+
+        if (nowOslo >= target) {
+          target.setUTCDate(target.getUTCDate() + 1);
+        }
+
+        return target;
+      }
+
+      let targetNoon = getNextNoonOslo();
+
+      function updateCountdown() {
+        const now = new Date();
+        const diff = targetNoon.getTime() - now.getTime();
+
+        if (diff <= 0) {
+          targetNoon = getNextNoonOslo();
+          return updateCountdown();
+        }
+
+        const totalSeconds = Math.floor(diff / 1000);
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+
+        const formatted = [hours, minutes, seconds]
+          .map((unit) => unit.toString().padStart(2, "0"))
+          .join(":");
+
+        countdownBg.textContent = formatted;
+      }
+
+      setInterval(updateCountdown, 1000);
+      updateCountdown();
       loadPositions();
     </script>
   </body>
