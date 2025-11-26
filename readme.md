@@ -1,6 +1,6 @@
-# Raise Your Stakes
+# Raise Your Votes
 
-A minimal FastAPI scaffold for a betting-style app where users can post positions and vote with a stake. The app is containerized for Cloud Run with a Cloud Build pipeline.
+A minimal FastAPI scaffold for a simple voting app where users can post positions and add a single vote. The app is containerized for Cloud Run with a Cloud Build pipeline.
 
 ## Running locally
 
