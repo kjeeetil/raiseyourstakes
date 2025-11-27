@@ -20,6 +20,23 @@ steps:
         'managed',
         '--allow-unauthenticated'
       ]
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: bash
+    args:
+      - '-c'
+      - |
+        set -euo pipefail
+        IMAGE="gcr.io/$PROJECT_ID/raiseyourstakes"
+
+        # Keep the three newest digests and delete the rest to avoid storage costs
+        gcloud container images list-tags "$IMAGE" --sort-by=~TIMESTAMP --format='get(digest)' \
+          | tail -n +4 \
+          | while read -r digest; do
+              if [[ -n "$digest" ]]; then
+                gcloud container images delete -q --force-delete-tags "${IMAGE}@${digest}"
+              fi
+            done
 images:
   - 'gcr.io/$PROJECT_ID/raiseyourstakes'
 substitutions:
