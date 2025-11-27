@@ -14,7 +14,28 @@ A minimal FastAPI scaffold for a simple voting app where users can post position
    ```
 3. Visit [http://localhost:8000](http://localhost:8000) to create positions and add votes.
 
-Persistent storage uses a SQLite database located in `data/app.db`.
+Persistent storage defaults to a SQLite database located in `data/app.db`. To use a more
+durable database (for example, Postgres), set `DATABASE_URL` before starting the server,
+using any SQLAlchemy-supported URL such as:
+
+```bash
+export DATABASE_URL="postgresql+psycopg2://dbuser:dbpass@dbhost:5432/raiseyourstakes"
+uvicorn app.main:app --reload
+```
+
+For Cloud SQL (Postgres) on Cloud Run, set the following variables and let the app
+construct the SQLAlchemy URL for you:
+
+```bash
+export CLOUD_SQL_CONNECTION_NAME="amazing-jetty-460321-v0:europe-west1:free-trial-first-project"
+export DB_USER="dbuser"
+export DB_PASSWORD="dbpass"
+export DB_NAME="raiseyourstakes"
+# Optional: override the Unix socket host path if you mount a custom socket directory.
+# export DB_HOST="/cloudsql/${CLOUD_SQL_CONNECTION_NAME}"
+
+uvicorn app.main:app --reload
+```
 
 ## Docker
 
